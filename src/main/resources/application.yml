@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: spring-ai-test
+  ai:
+    zhipuai:
+      api-key: 8c83e30ff2cb41c89cb895705648476b.Qu6VZjf0WDTrO0mE
+      chat:
+        options:
+          model: glm-4v-flash
+    openai:
+      api-key: sk-379fc2aff15d48de99c5d35b4ecb2fb4
+      base-url: https://api.deepseek.com
+      chat:
+        options:
+          model: deepseek-v4-flash
+    embedding:
+      transformer:
+        enabled: true
+rag:
+  document-task-dispatcher:
+    type: async
+  upload-file-path: uploads
+  embedding:
+    type: LOCAL_ONNX
+    vector-store:
+      type: LOCAL_JSONL
+      path: rag_storage
+      extension: .jsonl

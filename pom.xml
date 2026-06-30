@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<!-- <version>4.1.0</version> -->
+		<version>3.2.5</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
+	<groupId>soly.dev</groupId>
+	<artifactId>spring-ai-test</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>spring-ai-test</name>
+	<description>spring-ai-test</description>
+
+    <!-- 真相：那是发布给别人看（装 X）用的元数据，自己开发完全用不上。
+    url：你的项目主页网址。
+    licenses：你的代码开源协议（比如 MIT, Apache 2.0）。
+    developers：作者的装 X 介绍（你的名字、邮箱）。
+    scm (Source Control Management)：你的源码放在哪里了（比如 GitHub 链接）。
+    结论： 这些东西只有在你想把这个项目打包发布到 Maven 中央仓库，让全世界都能下载你的包时才有用。对我们本地跑 Demo 来说，它们就是一堆毫无意义的占位符废话，删了代码更清爽。 -->
+	<url/>
+	<licenses>
+		<license/>
+	</licenses>
+	<developers>
+		<developer/>
+	</developers>
+	<scm>
+		<connection/>
+		<developerConnection/>
+		<tag/>
+		<url/>
+	</scm>
+
+	<properties>
+		<java.version>17</java.version>
+        <!-- 🎯 1. 声明 Spring AI 版本 -->
+        <spring-ai.version>1.0.0-M1</spring-ai.version>
+	</properties>
+	<dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
+        </dependency>
+        <!-- 🎯 3. 核心！引入 Spring AI 的 OpenAI 组件 -->
+        <dependency>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-zhipuai-spring-boot-starter</artifactId>
+        </dependency>
+        <!-- OpenAI Starter (用来给 DeepSeek 套壳) -->
+        <dependency>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-openai-spring-boot-starter</artifactId>
+        </dependency>
+        <!-- Spring AI 本地离线 Embedding 引擎 -->
+        <dependency>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-transformers-spring-boot-starter</artifactId>
+        </dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+    <!-- 🎯 4. BOM 版本管理器 -->
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.ai</groupId>
+                <artifactId>spring-ai-bom</artifactId>
+                <version>${spring-ai.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+
+    <!-- 🎯 5. 里程碑仓库 (必须有它才能下到最新版的 Spring AI) -->
+    <repositories>
+        <repository>
+            <id>spring-milestones</id>
+            <name>Spring Milestones</name>
+            <url>https://repo.spring.io/milestone</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+</project>
