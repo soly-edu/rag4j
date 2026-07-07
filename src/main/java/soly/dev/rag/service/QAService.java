@@ -1,8 +1,6 @@
 package soly.dev.rag.service;
 
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
-import org.springframework.ai.chat.memory.InMemoryChatMemory;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,20 +18,15 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class QAService {
 
-    @Value("${rag.embedding.vector-store.path}")
+    @Value("${rag.vector-store.local-jsonl.storage-path}")
     private String vectorStorePath;
 
-    @Value("${rag.embedding.type}")
-    private String embeddingType;
-
-    @Value("${rag.embedding.vector-store.extension}")
+    @Value("${rag.vector-store.local-jsonl.file-extension}")
     private String fileExt;
 
     private final EmbeddingEngineFactory embeddingEngineFactory;
@@ -47,9 +40,10 @@ public class QAService {
                 .build();
     }
 
-    public List<SearchResult> searchSimilarTopK(String question, String namespace, int topK) {
+    public List<SearchResult> searchSimilarTopK(String question, String namespace, String embeddingModel, int topK) {
+        // TODO 需要根据分片存储方式进行分别处理
         // 先检查有没有对应的向量分片文件
-        Path path = Paths.get(vectorStorePath, String.format("%s_%s%s", namespace, embeddingType, fileExt));
+        Path path = Paths.get(vectorStorePath, String.format("%s_%s%s", namespace, embeddingModel, fileExt));
         if (!path.toFile().exists()) {
             throw new IllegalArgumentException("Vector store file not found: " + path);
         }
@@ -60,7 +54,7 @@ public class QAService {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        EmbeddingEngine engine = embeddingEngineFactory.getEngine(embeddingType);
+        EmbeddingEngine engine = embeddingEngineFactory.getEngine(embeddingModel);
         float[] queryVector = engine.embed(question);
 
         return SimilarityUtils.searchTopK(queryVector, chunks, topK);

@@ -22,11 +22,8 @@ public class DocumentTaskProcessor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DocumentTaskProcessor.class);
 
-    @Value("${rag.upload-file-path}")
+    @Value("${rag.core.upload-path}")
     private String uploadDir;
-
-    @Value("${rag.embedding.type}")
-    private String embeddingType;
 
     private final EmbeddingEngineFactory  embeddingEngineFactory;
 
@@ -37,7 +34,7 @@ public class DocumentTaskProcessor {
         this.vectorStoreRepository = vectorStoreRepository;
     }
 
-    public void taskExecute(String uniqueFilename, String namespace){
+    public void taskExecute(String uniqueFilename, String namespace, String embeddingModel){
         File sourceFile = Paths.get(uploadDir, uniqueFilename).toFile();
         if (!sourceFile.exists()) {
             throw new IllegalArgumentException("物理文件丢失或不存在，处理失败: " + uniqueFilename);
@@ -46,20 +43,20 @@ public class DocumentTaskProcessor {
         String fileExtension = FileUtils.getFileExtension(uniqueFilename);
         LOGGER.debug("开始处理文档: {}，文件格式：{}，当前线程: {}" , uniqueFilename, fileExtension, Thread.currentThread().getName());
         String fullContent = DocumentParserFactory.parseContent(sourceFilePath, fileExtension);
-        // TODO 1. 文档分片
-        List<KnowledgeChunk> chunkList = TextSplitHelper.split(namespace, embeddingType, uniqueFilename, sourceFilePath, fullContent);
+        // 1. 文档分片
+        List<KnowledgeChunk> chunkList = TextSplitHelper.split(namespace, embeddingModel, uniqueFilename, sourceFilePath, fullContent);
         // 批量生成向量
         List<String> chunkContentList = chunkList.stream().map(KnowledgeChunk::getChunkContent).toList();
-        EmbeddingEngine engine = embeddingEngineFactory.getEngine(embeddingType);
+        EmbeddingEngine engine = embeddingEngineFactory.getEngine(embeddingModel);
         if (ObjectUtils.isEmpty(engine)) {
-            throw new IllegalStateException("EmbeddingEngine 初始化失败，类型: " + embeddingType);
+            throw new IllegalStateException("EmbeddingEngine 初始化失败，类型: " + embeddingModel);
         }
         List<float[]> vectorList = engine.embed(chunkContentList);
         // 为分片装载向量
         for (int i = 0; i < chunkList.size(); i++) {
             chunkList.get(i).setVector(vectorList.get(i));
         }
-        // TODO 2. 分片入库
-        vectorStoreRepository.saveAll(namespace, chunkList);
+        // 2. 分片入库
+        vectorStoreRepository.saveAll(namespace, embeddingModel, chunkList);
     }
 }

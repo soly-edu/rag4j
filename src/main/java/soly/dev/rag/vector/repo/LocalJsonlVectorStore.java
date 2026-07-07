@@ -3,6 +3,7 @@ package soly.dev.rag.vector.repo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
+import soly.dev.rag.constants.VectorStoreType;
 import soly.dev.rag.entity.KnowledgeChunk;
 import soly.dev.rag.util.ObjectMapperUtils;
 
@@ -16,22 +17,19 @@ import java.nio.file.StandardOpenOption;
 import java.util.List;
 
 @Repository
-@ConditionalOnProperty(name = "rag.embedding.vector-store.type", havingValue = "LOCAL_JSONL", matchIfMissing = true)
+@ConditionalOnProperty(name = "rag.vector-store.type", havingValue = "LOCAL_JSONL", matchIfMissing = true)
 public class LocalJsonlVectorStore implements VectorStoreRepository {
 
-    @Value("${rag.embedding.vector-store.path}")
+    @Value("${rag.vector-store.local-jsonl.storage-path}")
     private String vectorStorePath;
 
-    @Value("${rag.embedding.vector-store.extension}")
+    @Value("${rag.vector-store.local-jsonl.file-extension}")
     private String fileExt;
 
-    @Value("${rag.embedding.type}")
-    private String embeddingType;
-
     @Override
-    public void saveAll(String namespace, List<KnowledgeChunk> chunks) {
+    public void saveAll(String namespace, String embeddingModel, List<KnowledgeChunk> chunks) {
         // 将分片数据保存到本地 JSONL 文件中
-        Path path = Paths.get(vectorStorePath, String.format("%s_%s%s", namespace, embeddingType, fileExt));
+        Path path = Paths.get(vectorStorePath, String.format("%s_%s%s", namespace, embeddingModel, fileExt));
         if (path.getParent() != null) {
             try {
                 Files.createDirectories(path.getParent());
@@ -52,6 +50,6 @@ public class LocalJsonlVectorStore implements VectorStoreRepository {
 
     @Override
     public String getStoreType() {
-        return "LOCAL_JSONL";
+        return VectorStoreType.LOCAL_JSONL.toString();
     }
 }

@@ -3,7 +3,6 @@ package soly.dev.rag.splitter.impl;
 import soly.dev.rag.splitter.DocumentSplitter;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -37,15 +36,11 @@ public class StaticRuleSplitter implements DocumentSplitter {
 
     @Override
     public String getStrategyName() {
-        return "static_rule_" + separator;
-        // switch (separator) {
-        //     case "\n":
-        //         return "StaticRule_NewLine";
-        //         case "\r":
-        //             return "StaticRule_Return";
-        //     case "\\。":
-        //         return "StaticRule_Period";
-        // }
+        return switch (separator) {
+            case "\r" -> "static_rule_return";
+            case "\\。" -> "static_rule_period";
+            default -> "static_rule_newline";
+        };
     }
 
     private List<String> splitLongPiece(String longRawPiece) {

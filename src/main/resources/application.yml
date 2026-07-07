@@ -16,13 +16,59 @@ spring:
     embedding:
       transformer:
         enabled: true
+
 rag:
-  document-task-dispatcher:
-    type: async
-  upload-file-path: uploads
+  # 1. 核心系统配置
+  core:
+    upload-path: ./data/uploads           # 上传文件临时存储目录
+    max-file-size: 50         # 限制单文件大小
+
+  # 2. 任务调度分发器 (Task Dispatcher)
+  dispatcher:
+    type: async                           # 动态切换: sync, async, rabbitmq, kafka
+    async:
+      core-pool-size: 4                   # 线程池参数隔离
+      max-pool-size: 10
+    rabbitmq:
+      exchange: rag.document.exchange     # MQ 参数隔离
+      routing-key: rag.document.routing
+
+  # 3. 嵌入模型配置 (Embedding Models)
   embedding:
-    type: LOCAL_ONNX
-    vector-store:
-      type: LOCAL_JSONL
-      path: rag_storage
-      extension: .jsonl
+    # 全局默认模型（当 API 未传入特定模型时降级使用）
+    default-model: local_onnx
+    # 支持多模型同时配置（对应 EmbeddingEngineFactory）
+    models:
+      local_onnx:
+        model-path: ./models/all-MiniLM-L6-v2
+        dimension: 384
+
+  # 4. 向量数据库双引擎插拔配置 (Vector Store)
+  vector-store:
+    # 🌟 核心开关：通过改变 type 的值，触发 @ConditionalOnProperty，动态加载对应的 Repository 实现类
+    type: milvus                          # 可选: local_jsonl, milvus, pgvector, elasticsearch, chroma
+
+    # [存储方案 A] 本地文件存储 (隔离的专属参数)
+    local-jsonl:
+      storage-path: ./data/vector_storage
+      file-extension: .jsonl
+
+    # [存储方案 B] Milvus 向量库
+    milvus:
+      host: localhost
+      port: 19530
+      database-name: default
+      token: root:Milvus                 # 若开启鉴权
+
+    # [存储方案 C] Elasticsearch (混合检索利器)
+    elasticsearch:
+      uris: http://localhost:9200
+      username: elastic
+      password: changeme
+      index-prefix: rag_doc_             # 索引命名前缀
+
+    # [存储方案 D] PGVector
+    pgvector:
+      # 通常直接复用 spring.datasource 的连接，这里只配专属参数
+      schema-name: public
+      dimension-enforce: true            # 是否强制维度校验

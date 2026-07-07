@@ -41,8 +41,7 @@ public class TextSplitHelper {
                 // 构造 KnowledgeChunk 对象
                 KnowledgeChunk chunk = new KnowledgeChunk();
 
-                //TODO 后续可以继续拼接namespace，namespace考虑变量传入或者配置传入
-                String chunkId = String.format("[%s]%s_%s_chunk%05d", namespace, sourceFileHash, staticRuleSplitter.getStrategyName(), i + 1);
+                String chunkId = String.format("%s_%s_chunk%05d", sourceFileHash, staticRuleSplitter.getStrategyName(), i + 1);
 
                 chunk.setChunkId(chunkId);
                 chunk.setChunkContent(chunkContent);

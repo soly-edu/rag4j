@@ -2,9 +2,9 @@ package soly.dev.rag.embedding.impl;
 
 import org.springframework.ai.transformers.TransformersEmbeddingModel;
 import org.springframework.stereotype.Component;
+import soly.dev.rag.constants.EmbeddingModel;
 import soly.dev.rag.embedding.EmbeddingEngine;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -19,30 +19,27 @@ public class LocalTransformersEngine implements EmbeddingEngine {
     @Override
     public float[] embed(String text) {
         List<Double> embedded = embeddingModel.embed(text);
-        float[] result = new float[embedded.size()];
-        for (int i = 0; i < embedded.size(); i++) {
-            result[i] = embedded.get(i).floatValue();
-        }
-        return result;
+        return toFloatArray(embedded);
     }
 
     @Override
     public List<float[]> embed(List<String> texts) {
         List<List<Double>> embedded = embeddingModel.embed(texts);
-        // 数据结构转换
-        ArrayList<float[]> result = new ArrayList<>(embedded.size());
-        for (List<Double> list : embedded) {
-            float[] floats = new float[list.size()];
-            for (int i = 0; i < list.size(); i++) {
-                floats[i] = list.get(i).floatValue();
-            }
-            result.add(floats);
+        return embedded.stream()
+                .map(this::toFloatArray)
+                .toList();
+    }
+
+    private float[] toFloatArray(List<Double> list) {
+        float[] floats = new float[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            floats[i] = list.get(i).floatValue();
         }
-        return result;
+        return floats;
     }
 
     @Override
     public String getEngineType() {
-        return "LOCAL_ONNX";
+        return EmbeddingModel.LOCAL_ONNX.getId();
     }
 }

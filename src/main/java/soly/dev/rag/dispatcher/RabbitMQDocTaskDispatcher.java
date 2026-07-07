@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
  * TODO 待实现
  */
 @Component
-@ConditionalOnProperty(name = "rag.document-task-dispatcher.type", havingValue = "RabbitMQ")
+@ConditionalOnProperty(name = "rag.dispatcher.type", havingValue = "RabbitMQ")
 public class RabbitMQDocTaskDispatcher implements DocumentTaskDispatcher{
 
     private final RabbitTemplate rabbitTemplate;
@@ -17,7 +17,7 @@ public class RabbitMQDocTaskDispatcher implements DocumentTaskDispatcher{
     }
 
     @Override
-    public void taskDispatch(String uniqueFilename, String namespace) {
+    public void taskDispatch(String uniqueFilename, String namespace, String embeddingModel) {
         rabbitTemplate.convertAndSend("docTaskExchange", "docTaskRoutingKey", uniqueFilename);
     }
 }
