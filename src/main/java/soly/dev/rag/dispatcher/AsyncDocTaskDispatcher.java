@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import soly.dev.rag.service.DocumentTaskProcessor;
 
 @Component
-@ConditionalOnProperty(name = "rag.document-task-dispatcher.type", havingValue = "async", matchIfMissing = true)
+@ConditionalOnProperty(name = "rag.dispatcher.type", havingValue = "async", matchIfMissing = true)
 public class AsyncDocTaskDispatcher implements DocumentTaskDispatcher{
 
     private final DocumentTaskProcessor processor;
@@ -17,7 +17,7 @@ public class AsyncDocTaskDispatcher implements DocumentTaskDispatcher{
 
     @Override
     @Async
-    public void taskDispatch(String uniqueFilename, String namespace) {
-        processor.taskExecute(uniqueFilename, namespace);
+    public void taskDispatch(String uniqueFilename, String namespace, String embeddingModel) {
+        processor.taskExecute(uniqueFilename, namespace, embeddingModel);
     }
 }

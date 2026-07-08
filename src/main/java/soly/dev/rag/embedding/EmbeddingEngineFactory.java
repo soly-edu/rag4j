@@ -20,4 +20,8 @@ public final class EmbeddingEngineFactory {
     public EmbeddingEngine getEngine(String engineType) {
         return engineMap.get(engineType);
     }
+
+    public boolean containsEngine(String engineType) {
+        return engineMap.containsKey(engineType);
+    }
 }

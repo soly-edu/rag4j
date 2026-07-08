@@ -10,7 +10,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 @Component
-@ConditionalOnProperty(name = "rag.document-task-dispatcher.type", havingValue = "threadPool")
+@ConditionalOnProperty(name = "rag.dispatcher.type", havingValue = "threadPool")
 public class ThreadPoolDocTaskDispatcher implements DocumentTaskDispatcher{
 
     private final ExecutorService executorService;
@@ -26,11 +26,11 @@ public class ThreadPoolDocTaskDispatcher implements DocumentTaskDispatcher{
     }
 
     @Override
-    public void taskDispatch(String uniqueFilename, String namespace) {
+    public void taskDispatch(String uniqueFilename, String namespace, String embeddingModel) {
         executorService.submit(new Runnable() {
             @Override
             public void run() {
-                processor.taskExecute(uniqueFilename, namespace);
+                processor.taskExecute(uniqueFilename, namespace, embeddingModel);
             }
         });
     }

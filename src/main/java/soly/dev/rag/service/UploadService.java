@@ -22,7 +22,7 @@ public class UploadService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UploadService.class);
 
-    @Value("${rag.upload-file-path}")
+    @Value("${rag.core.upload-path}")
     private String uploadDir;
 
     // 根据配置获取对应的分发器
@@ -32,7 +32,7 @@ public class UploadService {
         this.dispatcher = dispatcher;
     }
 
-    public ResponseEntity<HttpResponseBody> upload(MultipartFile file, String namespace) {
+    public ResponseEntity<HttpResponseBody> upload(MultipartFile file, String namespace, String embeddingModel) {
         HttpResponseBody responseBody;
         try {
             if (file.isEmpty()) {
@@ -66,7 +66,7 @@ public class UploadService {
             UploadFileRespData data = new UploadFileRespData(uniqueFilename, originalFilename, fileExtension, filePath.toString(), file.getSize(), file.getContentType());
             responseBody.setData(data);
             // 分片任务分发
-            dispatcher.taskDispatch(uniqueFilename, namespace);
+            dispatcher.taskDispatch(uniqueFilename, namespace, embeddingModel);
             return ResponseEntity.ok(responseBody);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);

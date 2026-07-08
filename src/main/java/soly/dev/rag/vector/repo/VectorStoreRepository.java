@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface VectorStoreRepository {
 
-    void saveAll(String namespace, List<KnowledgeChunk> chunks);
+    void saveAll(String namespace, String embeddingModel, List<KnowledgeChunk> chunks);
 
     String getStoreType();
 }
