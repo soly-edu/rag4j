@@ -5,8 +5,11 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 import soly.dev.rag.constants.VectorStoreType;
 import soly.dev.rag.entity.KnowledgeChunk;
+import soly.dev.rag.entity.ScoredKnowledgeChunk;
 import soly.dev.rag.util.ObjectMapperUtils;
+import soly.dev.rag.util.SimilarityUtils;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -46,6 +49,24 @@ public class LocalJsonlVectorStore implements VectorStoreRepository {
         } catch (Exception e) {
             throw new RuntimeException("Failed to save chunks to local JSONL file", e);
         }
+    }
+
+    @Override
+    public List<ScoredKnowledgeChunk> searchTopK(String namespace, String embeddingModel, int topK, float[] queryVector) {
+        // 先检查有没有对应的向量分片文件
+        Path path = Paths.get(vectorStorePath, String.format("%s_%s%s", namespace, embeddingModel, fileExt));
+        if (!path.toFile().exists()) {
+            throw new IllegalArgumentException("Vector store file not found: " + path);
+        }
+
+        List<KnowledgeChunk> chunks;
+        try(BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
+            chunks = reader.lines().map(line -> ObjectMapperUtils.toEntity(line, KnowledgeChunk.class)).toList();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        return SimilarityUtils.searchTopK(queryVector, chunks, topK);
     }
 
     @Override

@@ -41,6 +41,8 @@ rag:
     models:
       local_onnx:
         model-path: ./models/all-MiniLM-L6-v2
+        # TransformersEmbeddingModel 的默认内置模型是 sentence-transformers/all-MiniLM-L6-v2，固定Dimensions（输出维度）：384
+        # 想更换模型参考 https://docs.spring.io/spring-ai/reference/api/embeddings/onnx.html 或 更换在线嵌入模型api
         dimension: 384
 
   # 4. 向量数据库双引擎插拔配置 (Vector Store)

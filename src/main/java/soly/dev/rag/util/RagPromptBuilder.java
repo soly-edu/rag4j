@@ -4,7 +4,7 @@ import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.messages.UserMessage;
 import soly.dev.rag.entity.KnowledgeChunk;
-import soly.dev.rag.entity.SearchResult;
+import soly.dev.rag.entity.ScoredKnowledgeChunk;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +15,7 @@ public class RagPromptBuilder {
     }
 
 
-    public static List<Message> buildRagPrompt(String question, List<SearchResult> searchResults) {
+    public static List<Message> buildRagPrompt(String question, List<ScoredKnowledgeChunk> scoredKnowledgeChunks) {
 
         ArrayList<Message> messages = new ArrayList<>();
         String ragSystemPrompt = "你是一个专业的企业级知识库问答AI助手。" +
@@ -25,10 +25,10 @@ public class RagPromptBuilder {
 
         messages.add(new SystemMessage(ragSystemPrompt));
         StringBuilder contextBuilder = new StringBuilder();
-        for (int i = 0; i < searchResults.size(); i++) {
-            KnowledgeChunk chunk = searchResults.get(i).getChunk();
+        for (int i = 0; i < scoredKnowledgeChunks.size(); i++) {
+            KnowledgeChunk chunk = scoredKnowledgeChunks.get(i).getChunk();
             String context = String.format("[片段%d]%n分片内容:%s%n分片标识:%s%n来源:%s%n相似度:%.4f%n%n",
-                    i + 1, chunk.getChunkContent(), chunk.getChunkId(), chunk.getSourceMeta().getSourceFileName(), searchResults.get(i).getSimilarityScore());
+                    i + 1, chunk.getChunkContent(), chunk.getChunkId(), chunk.getSourceMeta().getSourceFileName(), scoredKnowledgeChunks.get(i).getSimilarityScore());
             contextBuilder.append(context);
         }
         String userPrompt = String.format("<context>%s</context>%n[用户问题]: %s", contextBuilder, question);

@@ -1,8 +1,22 @@
 package soly.dev.rag.entity;
 
+import java.util.List;
 import java.util.Map;
 
 public class KnowledgeChunk {
+
+    public static final String ID = "id";
+    public static final String CHUNK_ID = "chunkId";
+    public static final String CHUNK_CONTENT = "chunkContent";
+    public static final String VECTOR = "vector";
+    public static final String CHUNK_NAMESPACE = "chunkNamespace";
+    public static final String CHUNK_HASH = "chunkHash";
+    public static final String CHUNK_INDEX = "chunkIndex";
+    public static final String CHUNK_SIZE = "chunkSize";
+    public static final String CHUNK_SPLIT_RULE = "chunkSplitRule";
+    public static final String CHUNK_EMBEDDING_TYPE = "chunkEmbeddingType";
+    public static final String SOURCE_META = "sourceMeta";
+    public static final String EXT_ATTRIBUTES = "extAttributes";
 
     /**
      * 分片唯一 ID（例: hash_chunk001）
@@ -38,6 +52,11 @@ public class KnowledgeChunk {
      * 分片大小（字符数或字节数，按约定）
      */
     private int chunkSize;
+
+    /**
+     * 切分规则
+     */
+    private String chunkSplitRule;
 
     /**
      * 生成此向量的嵌入模型标识 (例如 "LOCAL_ONNX", "OPENAI")
@@ -113,6 +132,14 @@ public class KnowledgeChunk {
         this.chunkSize = chunkSize;
     }
 
+    public String getChunkSplitRule() {
+        return chunkSplitRule;
+    }
+
+    public void setChunkSplitRule(String chunkSplitRule) {
+        this.chunkSplitRule = chunkSplitRule;
+    }
+
     public String getChunkEmbeddingType() {
         return chunkEmbeddingType;
     }
@@ -135,5 +162,22 @@ public class KnowledgeChunk {
 
     public void setExtAttributes(Map<String, Object> extAttributes) {
         this.extAttributes = extAttributes;
+    }
+
+    public static List<String> getAllFieldNames() {
+        return List.of(
+                ID,
+                CHUNK_ID,
+                CHUNK_CONTENT,
+                VECTOR,
+                CHUNK_NAMESPACE,
+                CHUNK_HASH,
+                CHUNK_INDEX,
+                CHUNK_SIZE,
+                CHUNK_SPLIT_RULE,
+                CHUNK_EMBEDDING_TYPE,
+                SOURCE_META,
+                EXT_ATTRIBUTES
+        );
     }
 }

@@ -1,7 +1,7 @@
 package soly.dev.rag.controller;
 
 import org.springframework.web.bind.annotation.*;
-import soly.dev.rag.entity.SearchResult;
+import soly.dev.rag.entity.ScoredKnowledgeChunk;
 import soly.dev.rag.service.QAService;
 
 import java.util.List;
@@ -19,8 +19,8 @@ public class QAController {
     @GetMapping(value = "/search")
     public String search(@RequestParam(value = "question") String question, @RequestParam(value = "namespace", defaultValue = "default") String namespace, @RequestParam(value = "embeddingModel", defaultValue = "local_onnx") String embeddingModel, @RequestParam(value = "topK", defaultValue = "3") int topK) {
 
-        List<SearchResult> searchResult = qaService.searchSimilarTopK(question, namespace, embeddingModel, topK);
-        return qaService.askLLM(question, searchResult);
+        List<ScoredKnowledgeChunk> scoredKnowledgeChunk = qaService.searchSimilarTopK(question, namespace, embeddingModel, topK);
+        return qaService.askLLM(question, scoredKnowledgeChunk);
     }
 
 

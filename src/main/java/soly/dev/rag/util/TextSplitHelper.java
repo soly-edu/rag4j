@@ -41,14 +41,14 @@ public class TextSplitHelper {
                 // 构造 KnowledgeChunk 对象
                 KnowledgeChunk chunk = new KnowledgeChunk();
 
-                String chunkId = String.format("%s_%s_chunk%05d", sourceFileHash, staticRuleSplitter.getStrategyName(), i + 1);
-
+                String chunkId = String.format("%s_chunk%05d", sourceFileHash, i + 1);
                 chunk.setChunkId(chunkId);
                 chunk.setChunkContent(chunkContent);
                 chunk.setChunkSize(chunkContent.length());
                 chunk.setChunkNamespace(namespace);
                 chunk.setChunkIndex(i + 1);
                 chunk.setChunkHash(HexUtils.toHexString(messageDigest.digest(chunkContent.getBytes(StandardCharsets.UTF_8))));
+                chunk.setChunkSplitRule(staticRuleSplitter.getStrategyName());
                 chunk.setChunkEmbeddingType(embeddingType);
                 chunk.setSourceMeta(chunkSourceMeta);
                 // 明确声明此时无向量，留给外层去批量生成并回填
