@@ -1,7 +1,6 @@
 HELP.md
 target/
-uploads/
-rag_storage/
+data/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/

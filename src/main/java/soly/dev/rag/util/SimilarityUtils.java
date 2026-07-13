@@ -1,7 +1,7 @@
 package soly.dev.rag.util;
 
 import soly.dev.rag.entity.KnowledgeChunk;
-import soly.dev.rag.entity.SearchResult;
+import soly.dev.rag.entity.ScoredKnowledgeChunk;
 
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -13,26 +13,26 @@ public class SimilarityUtils {
         /* This utility class should not be instantiated */
     }
 
-    public static List<SearchResult> searchTopK(float[] queryVector, List<KnowledgeChunk> chunks, int topK) {
-        PriorityQueue<SearchResult> minHeap = new PriorityQueue<>(Comparator.comparing(SearchResult::getSimilarityScore));
+    public static List<ScoredKnowledgeChunk> searchTopK(float[] queryVector, List<KnowledgeChunk> chunks, int topK) {
+        PriorityQueue<ScoredKnowledgeChunk> minHeap = new PriorityQueue<>(Comparator.comparing(ScoredKnowledgeChunk::getSimilarityScore));
         for (KnowledgeChunk chunk : chunks) {
             double similarityScore = cosineSimilarity(queryVector, chunk.getVector());
-            SearchResult searchResult = new SearchResult(chunk, similarityScore);
+            ScoredKnowledgeChunk scoredKnowledgeChunk = new ScoredKnowledgeChunk(chunk, similarityScore);
             if (minHeap.size() < topK) {
-                minHeap.offer(searchResult);
+                minHeap.offer(scoredKnowledgeChunk);
             } else {
                 assert minHeap.peek() != null;
                 if (similarityScore > minHeap.peek().getSimilarityScore()) {
                     minHeap.poll();
-                    minHeap.offer(searchResult);
+                    minHeap.offer(scoredKnowledgeChunk);
                 }
             }
         }
-        LinkedList<SearchResult> searchResults = new LinkedList<>();
+        LinkedList<ScoredKnowledgeChunk> scoredKnowledgeChunks = new LinkedList<>();
         while (!minHeap.isEmpty()) {
-            searchResults.addFirst(minHeap.poll());
+            scoredKnowledgeChunks.addFirst(minHeap.poll());
         }
-        return searchResults;
+        return scoredKnowledgeChunks;
     }
 
     private static double cosineSimilarity(float[] vectorA, float[] vectorB) {
