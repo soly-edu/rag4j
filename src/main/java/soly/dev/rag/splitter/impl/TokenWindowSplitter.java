@@ -1,5 +1,6 @@
 package soly.dev.rag.splitter.impl;
 
+import soly.dev.rag.constants.SplitterStrategy;
 import soly.dev.rag.splitter.DocumentSplitter;
 
 import java.util.List;
@@ -16,6 +17,6 @@ public class TokenWindowSplitter implements DocumentSplitter {
 
     @Override
     public String getStrategyName() {
-        return "";
+        return SplitterStrategy.TOKEN_WINDOW.getName();
     }
 }

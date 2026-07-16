@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 import soly.dev.rag.dispatcher.DocumentTaskDispatcher;
 import soly.dev.rag.entity.HttpResponseBody;
 import soly.dev.rag.entity.UploadFileRespData;
+import soly.dev.rag.entity.UploadRequestContext;
 import soly.dev.rag.util.FileUtils;
 
 import java.nio.file.Files;
@@ -32,7 +33,8 @@ public class UploadService {
         this.dispatcher = dispatcher;
     }
 
-    public ResponseEntity<HttpResponseBody> upload(MultipartFile file, String namespace, String embeddingModel) {
+    public ResponseEntity<HttpResponseBody> upload(UploadRequestContext requestContext) {
+        MultipartFile file = requestContext.getFile();
         HttpResponseBody responseBody;
         try {
             if (file.isEmpty()) {
@@ -66,7 +68,8 @@ public class UploadService {
             UploadFileRespData data = new UploadFileRespData(uniqueFilename, originalFilename, fileExtension, filePath.toString(), file.getSize(), file.getContentType());
             responseBody.setData(data);
             // 分片任务分发
-            dispatcher.taskDispatch(uniqueFilename, namespace, embeddingModel);
+            requestContext.setUniqueFileName(uniqueFilename);
+            dispatcher.taskDispatch(requestContext);
             return ResponseEntity.ok(responseBody);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);

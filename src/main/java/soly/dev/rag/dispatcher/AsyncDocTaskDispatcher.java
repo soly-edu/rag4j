@@ -3,6 +3,7 @@ package soly.dev.rag.dispatcher;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import soly.dev.rag.entity.UploadRequestContext;
 import soly.dev.rag.service.DocumentTaskProcessor;
 
 @Component
@@ -17,7 +18,7 @@ public class AsyncDocTaskDispatcher implements DocumentTaskDispatcher{
 
     @Override
     @Async
-    public void taskDispatch(String uniqueFilename, String namespace, String embeddingModel) {
-        processor.taskExecute(uniqueFilename, namespace, embeddingModel);
+    public void taskDispatch(UploadRequestContext requestContext) {
+        processor.taskExecute(requestContext);
     }
 }
