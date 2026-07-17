@@ -2,6 +2,7 @@ package soly.dev.rag.dispatcher;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
+import soly.dev.rag.entity.UploadRequestContext;
 import soly.dev.rag.service.DocumentTaskProcessor;
 
 import java.util.concurrent.ArrayBlockingQueue;
@@ -26,11 +27,11 @@ public class ThreadPoolDocTaskDispatcher implements DocumentTaskDispatcher{
     }
 
     @Override
-    public void taskDispatch(String uniqueFilename, String namespace, String embeddingModel) {
+    public void taskDispatch(UploadRequestContext requestContext) {
         executorService.submit(new Runnable() {
             @Override
             public void run() {
-                processor.taskExecute(uniqueFilename, namespace, embeddingModel);
+                processor.taskExecute(requestContext);
             }
         });
     }

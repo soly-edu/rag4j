@@ -32,7 +32,13 @@ rag:
     rabbitmq:
       exchange: rag.document.exchange     # MQ 参数隔离
       routing-key: rag.document.routing
-
+  splitter:
+    type: static_rule                     # 动态切换: static_rule, sliding_window, semantic, token_window
+    static-rule:
+      max-chunk-size: 500                     # 最大分块大小
+    sliding-window:
+      window-size: 500                     # 滑动窗口大小
+      overlap-size: 50                   # 重叠大小
   # 3. 嵌入模型配置 (Embedding Models)
   embedding:
     # 全局默认模型（当 API 未传入特定模型时降级使用）
